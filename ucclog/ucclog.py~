@@ -1,0 +1,108 @@
+import os
+import webapp2
+from google.appengine.ext.webapp import template
+from google.appengine.ext import db
+from util.sessions import Session
+
+
+def doRender(handler, tname='index.html', values={}):
+	temp = os.path.join(os.path.dirname(__file__), 'templates/' + tname)
+
+	if not os.path.isfile(temp):
+		return False
+
+	# Make a copy of the dictionary and add the path
+	newval = dict(values)
+	newval['path'] = handler.request.path
+
+	handler.session = Session()
+	if 'username' in handler.session:
+		newval['username'] = handler.session['username']
+
+	outstr = template.render(temp, newval)
+	handler.response.out.write(outstr)
+	return True
+
+#a model for a user
+class User(db.Model):
+	name = db.StringProperty()
+	username = db.StringProperty()
+	email = db.StringProperty()
+	password = db.StringProperty()
+
+class RegisterHandler(webapp2.RequestHandler):
+	def get(self):
+		doRender(self, 'account/register.html')
+
+	def post(self):
+		self.session = Session()
+		name = self.request.get('name')
+		username = self.request.get('username')
+		email = self.request.get('account')
+		passwd = self.request.get('password')
+		confirm_pass = self.request.get('cpassword')
+
+		if name == '' or username == '' or email == '' or passwd == '' or confirm_pass == '':
+			doRender( self, 'account/register.html', {'error' : 'Please fill the form'})
+			return
+		elif confirm_pass != passwd:
+			doRender( self, 'account/register.html', {'error' : 'Passwords must match'})
+			return
+
+		# Check whether the user already exists
+		que = db.Query(User)
+		que = que.filter('account =',email)
+		results = que.fetch(limit=1)
+
+		if len(results) > 0 :
+			doRender(self,'account/register.html',{'error' : 'Account Already Exists'} )
+			return
+
+		# Create the User object and log the user in
+		newuser = User(name=name, username=username, email=email, password=passwd);
+		newuser.put();
+		self.session['username'] = username
+		doRender(self,'index.html',{ })
+
+
+
+
+class LoginHandler(webapp2.RequestHandler):
+	def get(self):
+		doRender(self, 'account/login.html')
+
+	def post(self):
+		self.session = Session()
+		acct = self.request.get('account')
+		passwd = self.request.get('password')
+
+		if passwd == '' or acct == '':
+			doRender( self, 'account/login.html', {'error' : 'Please specify email and password'})
+		elif passwd == 'secret':
+			self.session['username'] = acct
+			doRender(self,'index.html',{})
+		else:
+			doRender(self, 'account/login.html',{'error' : 'Incorrect password'} )
+
+class LogoutHandler(webapp2.RequestHandler):
+	def get(self):
+		self.session = Session()
+		self.session.delete_item('username')
+		doRender(self, 'index.html')
+
+class MainHandler(webapp2.RequestHandler):
+	def get(self):
+		path = self.request.path
+		if doRender(self, path):
+			return
+
+		doRender(self, 'index.html')
+
+
+application = webapp2.WSGIApplication([
+	('/login', LoginHandler),
+	('/logout', LogoutHandler),
+	('/register', RegisterHandler),
+	('/.*', MainHandler)],
+	debug=True)
+

@@ -1,0 +1,15 @@
+{% extends "a_base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block formContent %}
+	<form class="form-signin" role="form" method="post" action="/register">
+		<input type="text" name="fname" class="form-control" placeholder="Full name" required autofocus>
+		<input type="text" name="uname" class="form-control" placeholder="Username" required>
+		<input type="email" name="account" class="form-control" placeholder="Email address" required>
+		<input type="password" name="password" class="form-control" placeholder="Password" required>
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+		<br>
+		<label><a href="/login"> Have an account already? Login!!</a></label>
+	</form>
+{% endblock %}

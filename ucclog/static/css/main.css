@@ -1,0 +1,60 @@
+#search-form{
+	margin-right: 30px;
+}
+
+#main-content{
+	padding: 30px 0 30px 0;
+}
+
+.text-wrap{
+	float: left;
+	margin-right: 15px;
+}
+
+.well{
+	background-color: #fff;
+	box-shadow: 3px 3px #d8d0dc;
+}
+
+.content-heading > .panel-title{
+	font-weight: bold;
+	font-size: 20px;
+}
+
+.panel-default > .content-heading{
+	background-color: #fef0f1;
+}
+
+.panel-default > .sidebar-heading{
+	background-color: #fafbfe;
+}
+
+.well > h5{
+	margin-bottom: 0;
+}
+
+.well > hr{
+	margin-bottom: 2px;
+	margin-top: 2px;
+}
+.panel-body{
+	
+}
+
+.author{
+	margin-top: 3px;
+  	margin-bottom: 2px;
+  	font-size: 15px;
+  	color: inherit;
+}
+
+.panel-body > header > h2{
+	font-size: 40px;
+	font-weight: 2px !important;
+	color: #d2d6df;
+	margin-bottom: 5px;
+}
+
+.panel-default > .details-content-heading{
+	background-color: #fff;
+}
